@@ -1,34 +1,30 @@
-import 'package:first_app/screens/home.screen.dart';
 import 'package:first_app/screens/profile/profile.screen.dart';
-import 'package:first_app/screens/vehicle/list-vehicle.screen.dart';
+import 'package:first_app/screens/location/list-location.screen.dart';
+import 'package:first_app/screens/request/list-request.screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BaseScreen extends StatefulWidget {
+final currentIndexProvider = StateProvider<int>((ref) => 0);
+
+class BaseScreen extends ConsumerWidget {
   const BaseScreen({super.key});
 
-  @override
-  State<BaseScreen> createState() => _BaseScreenState();
-}
-
-class _BaseScreenState extends State<BaseScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _tabs = [
-    const HomeScreen(),
-    const ListVehicleScreen(),
-    const ProfileScreen(),
+  final List<Widget> _tabs = const [
+    ListLocationScreen(),
+    ListRentRequestScreen(),
+    ProfileScreen(),
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(currentIndexProvider);
+
     return Scaffold(
-      body: _tabs[_currentIndex],
+      body: _tabs[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          ref.read(currentIndexProvider.notifier).state = index;
         },
         items: const [
           BottomNavigationBarItem(
@@ -36,8 +32,8 @@ class _BaseScreenState extends State<BaseScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.car_crash_outlined),
-            label: 'Vehicle',
+            icon: Icon(Icons.access_time),
+            label: 'Request',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
